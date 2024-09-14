@@ -5,7 +5,7 @@
 
 int main()
 {	
-	PacketQueue<256, 10, 1024> packetQueue;
+	PacketQueue<256, 5, 1024> packetQueue;
 
 	unsigned char data[] = { (unsigned char)0xf, (unsigned char)0x17, (unsigned char)0x7 };
 

@@ -11,14 +11,15 @@ public:
 	PacketQueue() :
 		dataCountInQueue(0),
 		queueStart(0),
-		queueEnd(0) {}
+		queueEnd(0),
+		elementsInQueue(0) {}
 
 	bool push(unsigned char* data, unsigned int dataCount, unsigned int packetId) {
 		if (dataCount > maxDataCount) {
 			return false;
 		}
 
-		if (queueSize() + 1 > maxPacketsInQueue) {
+		if (elementsInQueue == maxPacketsInQueue) {
 			return false;
 		}
 
@@ -30,6 +31,8 @@ public:
 		queueEnd = (queueEnd + 1) % maxPacketsInQueue;
 
 		dataCountInQueue += dataCount;
+
+		++elementsInQueue;
 
 		return true;
 	}
@@ -51,6 +54,8 @@ public:
 		dataCountInQueue -= dataCount;
 		firstPacket->freeData();
 
+		--elementsInQueue;
+
 		return true;
 	}
 
@@ -68,20 +73,12 @@ public:
 
 private:
 	bool isEmpty() {
-		return queueStart == queueEnd;
-	}
-
-	size_t queueSize() {
-		if (queueStart <= queueEnd) {
-			return queueEnd - queueStart;
-		}
-		else {
-			return maxPacketsInQueue - (queueStart - queueEnd);
-		}
+		return elementsInQueue == 0;
 	}
 
 	std::array<Packet, maxPacketsInQueue> queue{};
 	int dataCountInQueue;
 	int queueStart;
 	int queueEnd;
+	int elementsInQueue;
 };
