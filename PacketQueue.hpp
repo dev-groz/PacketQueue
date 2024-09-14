@@ -1,4 +1,7 @@
 #pragma once
+
+#include <array>
+
 #include "Packet.hpp"
 
 template <unsigned int maxDataCount, unsigned int maxPacketsInQueue, unsigned int queueCapacity>
@@ -58,7 +61,6 @@ public:
 			for (int i = queueStart; i < queueEnd; i++)
 			{
 				queue[i].freeData();
-				std::cout << i << " th data freed\n";
 			}
 		}
 	}
