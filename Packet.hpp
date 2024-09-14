@@ -16,6 +16,9 @@ public:
 		{
 			std::memcpy(data, newData, newDataCount);
 		}
+		else {
+			throw std::exception("Internal error: Malloc returned 0!");
+		}
 	}
 
 	unsigned char* getData() {
