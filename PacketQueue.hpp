@@ -1,52 +1,11 @@
-﻿#include <iostream>
-#include <memory>
-#include <array>
-
-
-class Packet
-{
-public:
-	Packet() :
-		data(0), dataCount(0), packetId(0) {}
-
-	Packet(unsigned char* newData,	unsigned int newDataCount,	unsigned int newPacketId) {
-		dataCount = newDataCount;
-		packetId = newPacketId;
-		data = (unsigned char*)std::malloc(sizeof(unsigned char) * newDataCount);
-		if (data != 0)
-		{
-			std::memcpy(data, newData, newDataCount);
-		}
-	}
-	
-	unsigned char* getData() {
-		return data;
-	}
-	
-	unsigned int getDataCount() {
-		return dataCount;
-	}
-	
-	unsigned int getPacketId() {
-		return packetId;
-	}
-
-	void freeData() {
-		std::free(data);
-	}
-private:
-	unsigned char* data;
-	unsigned int dataCount;
-	unsigned int packetId;
-};
-
-
+#pragma once
+#include "Packet.hpp"
 
 template <unsigned int maxDataCount, unsigned int maxPacketsInQueue, unsigned int queueCapacity>
 class PacketQueue {
 
 public:
-	PacketQueue():
+	PacketQueue() :
 		dataCountInQueue(0),
 		queueStart(0),
 		queueEnd(0) {}
@@ -55,7 +14,7 @@ public:
 		if (dataCount > maxDataCount) {
 			return false;
 		}
-			
+
 		if (queueSize() + 1 > maxPacketsInQueue) {
 			return false;
 		}
@@ -84,13 +43,26 @@ public:
 
 		packetId = firstPacket->getPacketId();
 
-		dataCount = firstPacket->getDataCount(); 
+		dataCount = firstPacket->getDataCount();
 
 		dataCountInQueue -= dataCount;
 		firstPacket->freeData();
 
 		return true;
 	}
+
+	~PacketQueue() {
+		if (isEmpty())
+			return;
+		if (queueStart < queueEnd) {
+			for (int i = queueStart; i < queueEnd; i++)
+			{
+				queue[i].freeData();
+				std::cout << i << " th data freed\n";
+			}
+		}
+	}
+
 
 private:
 	bool isEmpty() {
@@ -111,11 +83,3 @@ private:
 	int queueStart;
 	int queueEnd;
 };
-
-
-
-
-int main()
-{
-	
-}
