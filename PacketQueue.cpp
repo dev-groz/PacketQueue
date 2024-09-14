@@ -19,7 +19,19 @@ public:
 		}
 	}
 	
-	void destroy() {
+	unsigned char* getData() {
+		return data;
+	}
+	
+	unsigned int getDataCount() {
+		return dataCount;
+	}
+	
+	unsigned int getPacketId() {
+		return packetId;
+	}
+
+	void freeData() {
 		std::free(data);
 	}
 private:
@@ -60,14 +72,24 @@ public:
 		return true;
 	}
 
+	bool pop(unsigned char* buffer, unsigned int bufferSize, unsigned int& dataCount, unsigned int& packetId) {
+		if (isEmpty()) {
+			return false;
+		}
 
-	void logStats() {
-		std::cout << "maxDataCount: " << maxDataCount << '\n';
-		std::cout << "maxPacketsInQueue: " << maxPacketsInQueue << '\n';
-		std::cout << "queueCapacity: " << queueCapacity << '\n';
-		std::cout << "queueStart: " << queueStart << '\n';
-		std::cout << "queueEnd: " << queueEnd << '\n';
-		std::cout << "queueSize: " << queueSize() << '\n';
+		Packet* firstPacket = &(queue[queueStart]);
+		queueStart = (queueStart + 1) % maxPacketsInQueue;
+
+		std::memcpy(buffer, firstPacket->getData(), bufferSize);
+
+		packetId = firstPacket->getPacketId();
+
+		dataCount = firstPacket->getDataCount(); 
+
+		dataCountInQueue -= dataCount;
+		firstPacket->freeData();
+
+		return true;
 	}
 
 private:
@@ -95,13 +117,5 @@ private:
 
 int main()
 {
-	PacketQueue<256, 10, 4096> packetQueue;
-	unsigned char data[] = {(unsigned char)0xf, (unsigned char)0x7, (unsigned char)0xa};
-
-	packetQueue.push(data, 3, 2);
-	packetQueue.push(data, 3, 2);
-	packetQueue.push(data, 3, 2);
-	packetQueue.push(data, 3, 2);
-	packetQueue.push(data, 3, 2);
-	packetQueue.logStats();
+	
 }
