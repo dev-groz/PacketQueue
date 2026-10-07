@@ -53,32 +53,10 @@ public:
 		dataCount = firstPacket->getDataCount();
 
 		dataCountInQueue -= dataCount;
-		firstPacket->freeData();
 
 		--elementsInQueue;
 
 		return true;
-	}
-
-	~PacketQueue() {
-		if (isEmpty())
-			return;
-		if (queueStart < queueEnd) {
-			for (int i = queueStart; i < queueEnd; i++)
-			{
-				queue[i].freeData();
-			}
-		} else /* queueStart > queueEnd */ {
-			for (int i = 0; i < queueEnd; i++)
-			{
-				queue[i].freeData();
-			}
-
-			for (int i = queueStart; i < maxPacketsInQueue; i++)
-			{
-				queue[i].freeData();
-			}
-		}
 	}
 
 

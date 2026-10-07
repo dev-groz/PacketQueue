@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <vector>
 
 
 class Packet
@@ -11,18 +12,14 @@ public:
 	Packet(unsigned char* newData, unsigned int newDataCount, unsigned int newPacketId) {
 		dataCount = newDataCount;
 		packetId = newPacketId;
-		data = (unsigned char*)std::malloc(sizeof(unsigned char) * newDataCount);
-		if (data != 0)
-		{
-			std::memcpy(data, newData, newDataCount);
-		}
-		else {
-			throw std::exception("Internal error: Malloc returned 0!");
+		data = std::vector<unsigned char>{};
+		for (int i = 0; i < newDataCount; i++) {
+			data.push_back(newData[i]);
 		}
 	}
 
 	unsigned char* getData() {
-		return data;
+		return data.data();
 	}
 
 	unsigned int getDataCount() {
@@ -33,11 +30,8 @@ public:
 		return packetId;
 	}
 
-	void freeData() {
-		std::free(data);
-	}
 private:
-	unsigned char* data;
+	std::vector<unsigned char> data;
 	unsigned int dataCount;
 	unsigned int packetId;
 };
